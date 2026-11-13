@@ -96,7 +96,7 @@ If CI is not configured or required checks are absent, do not merge runtime/edit
 
 ### Changes requiring human review
 
-Do not auto-merge changes that alter repository permissions/settings, secrets, release credentials, CI supply-chain privileges, project licensing, legal notices, security boundaries, destructive migrations, public compatibility guarantees, or broad architecture decisions. Flag them for the owner with a short rationale.
+Do not auto-merge changes that alter repository permissions/settings, secrets, release credentials, CI supply-chain privileges, project licensing, legal notices, security boundaries, destructive migrations, public compatibility guarantees, or adopt a broad architecture decision. Flag them for the owner with a short rationale. A documentation-only ADR explicitly marked Proposed may be merged as a proposal; changing an ADR to Accepted or implementing a foundational choice requires owner review.
 
 ### Merge execution
 
