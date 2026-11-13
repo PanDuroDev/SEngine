@@ -8,12 +8,11 @@ Each daily worker owns one area. Workers must not all select the same next task.
 
 | Stream | Owns | Must not take over |
 |---|---|---|
-| Runtime and engine foundation | Rust workspace, runtime lifecycle, project/scene/asset core, rendering and platform integration spikes, CI and build reliability | Narrative authoring semantics or editor panel implementation |
-| Narrative and gameplay logic | Dialogue, branching, narrative variables/state, conditions, events, timelines, graph IR, story examples and headless tests | Renderer internals or editor layout |
-| Editor and visual authoring | English-language editor shell, project browser, inspectors, scene/viewport integration, dialogue/logic graph interaction, undo/redo and authoring UX | Runtime execution semantics or low-level renderer implementation |
-| Integration and release | Repository health, issue/PR triage, review quality, CI, dependency/license risk, safe merges, release notes and cross-stream compatibility | Starting overlapping feature implementations unless a small integration fix is necessary |
+| Runtime and engine foundation | Rust workspace, runtime lifecycle, project/scene/asset core, rendering and platform integration spikes, CI and build reliability | Narrative semantics or editor authoring UI |
+| Story and editor authoring | Narrative runtime and graph semantics; English-language editor, Story Map, dialogue/gameplay graph UI, inspectors, timeline, preview, undo/redo, and Narrative Debugger | Low-level runtime lifecycle, renderer internals, and platform build system |
+| Integration and release | Repository health, issue/PR triage, review quality, CI, dependency/license risk, safe merges, release notes, and cross-stream compatibility | Taking over feature ownership except for small integration fixes |
 
-The stream table defines ownership, not permanent technology choices. Update it through a reviewed PR if the project structure changes.
+The three scheduled daily workers map to the three rows above. The Story and editor worker owns two distinct product domains because their authoring contracts are tightly coupled, but it must select only one coherent outcome per daily run. Keep dialogue semantics separate from gameplay-graph semantics even when they share editor infrastructure. The stream table defines ownership, not permanent technology choices. Update it through a reviewed PR if the project structure changes.
 
 ## 2. No waiting and no dependency deadlocks
 
