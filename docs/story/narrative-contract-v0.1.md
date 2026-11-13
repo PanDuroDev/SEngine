@@ -32,7 +32,7 @@ Editor-only graph layout may be stored later in a separate sidecar format with i
 ## 2. Identity and versioning
 
 - IDs are opaque, case-sensitive strings matching the schema pattern. Use stable, namespaced IDs such as `node.archive.choice` or `story.has_archive_key`.
-- Every ID-bearing object in one Narrative Document must have a unique ID across the document, including graph nodes, options, variables, speakers, event types, entry points, and event payload fields.
+- Document, entity, graph, node, and option IDs must be unique across the Narrative Document. Payload field IDs are unique within their event type; payload keys use those field IDs.
 - Reordering an array must not change identity or behavior. Array order is presentation order only where explicitly stated.
 - Never recycle an ID for a different object. Renames preserve IDs.
 - `schema_version: 1` identifies this contract's structural version. It is not the application's release version.
@@ -140,8 +140,10 @@ These are acceptance cases for the future headless runtime, not claims that an i
 | Conditional choice shown | Set `story.has_archive_key=true` | `choice.use_key` becomes available. |
 | Choice executes effects | Select `choice.use_key` | Trust becomes 1; one `event.timeline.play` is queued; position advances to `node.ending`. |
 | Event order | Emit two events in one option | Queue preserves their order in the effects array. |
+| Invalid event payload | Omit a required field or provide an unknown/wrongly typed field | Reject the option atomically with `invalid_event_payload`. |
 | Atomic effect failure | Put a valid variable update before an invalid effect | No variable change is committed and no event is emitted. |
 | Stale choice | Select an option after its condition becomes false | Reject with `choice_unavailable`; state is unchanged. |
+| Duplicate ID | Reuse a node, option, speaker, variable, or event ID | Reject with `duplicate_id`; payload field IDs are checked within their event type. |
 | Missing variable | Reference an undeclared variable in a condition | Condition is invalid and false; diagnostic identifies the option/condition. |
 | Type mismatch | Compare a number variable with a string or add to a boolean | Validation/evaluation fails closed with `invalid_value_type`. |
 | Unreachable node | Add a node not reachable from the entry | Report `unreachable_node`. |
