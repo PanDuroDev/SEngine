@@ -1,0 +1,123 @@
+{
+  "kind": "sengine.narrative-document",
+  "schema_version": 1,
+  "document_id": "story.archive",
+  "variables": [
+    {
+      "id": "story.has_archive_key",
+      "name": "Has Archive Key",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "story.trust",
+      "name": "Guide Trust",
+      "type": "number",
+      "default": 0
+    }
+  ],
+  "speakers": [
+    {
+      "id": "speaker.narrator",
+      "display_name_key": "speaker.narrator.name"
+    },
+    {
+      "id": "speaker.guide",
+      "display_name_key": "speaker.guide.name",
+      "portrait_asset_id": "asset.portrait.guide"
+    }
+  ],
+  "event_types": [
+    {
+      "id": "event.scene.transition",
+      "payload_fields": [
+        {
+          "id": "scene_id",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "event.timeline.play",
+      "payload_fields": [
+        {
+          "id": "timeline_id",
+          "type": "string",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "id": "interaction.archive_door",
+      "graph_id": "dialogue.archive_intro",
+      "description": "Start when the player interacts with the archive door."
+    }
+  ],
+  "graphs": [
+    {
+      "id": "dialogue.archive_intro",
+      "entry_node_id": "node.opening",
+      "nodes": [
+        {
+          "id": "node.opening",
+          "kind": "line",
+          "speaker_id": "speaker.narrator",
+          "text_key": "dialogue.archive.opening",
+          "next_node_id": "node.decision"
+        },
+        {
+          "id": "node.decision",
+          "kind": "choice",
+          "options": [
+            {
+              "id": "choice.use_key",
+              "text_key": "dialogue.archive.choice.use_key",
+              "availability": {
+                "op": "compare",
+                "variable_id": "story.has_archive_key",
+                "comparison": "eq",
+                "value": true
+              },
+              "effects": [
+                {
+                  "op": "set_variable",
+                  "variable_id": "story.trust",
+                  "value": 1
+                },
+                {
+                  "op": "emit_event",
+                  "event_type_id": "event.timeline.play",
+                  "payload": {
+                    "timeline_id": "timeline.archive_reveal"
+                  }
+                }
+              ],
+              "target_node_id": "node.ending"
+            },
+            {
+              "id": "choice.leave",
+              "text_key": "dialogue.archive.choice.leave",
+              "effects": [
+                {
+                  "op": "emit_event",
+                  "event_type_id": "event.scene.transition",
+                  "payload": {
+                    "scene_id": "scene.village_square"
+                  }
+                }
+              ],
+              "target_node_id": "node.ending"
+            }
+          ]
+        },
+        {
+          "id": "node.ending",
+          "kind": "end"
+        }
+      ]
+    }
+  ]
+}
