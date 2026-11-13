@@ -1,0 +1,660 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SEngine Narrative Document and Player Save",
+  "description": "Proposed SEngine narrative authoring and save-data contracts, version 0.1.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/narrativeDocument"
+    },
+    {
+      "$ref": "#/$defs/playerSave"
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+    },
+    "textKey": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+    },
+    "scalar": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "variableDefinition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "name",
+            "type",
+            "default"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "const": "boolean"
+            },
+            "default": {
+              "type": "boolean"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "name",
+            "type",
+            "default"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "const": "number"
+            },
+            "default": {
+              "type": "number"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "name",
+            "type",
+            "default"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "const": "string"
+            },
+            "default": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "speaker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "display_name_key"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+        },
+        "display_name_key": {
+          "$ref": "#/$defs/textKey"
+        },
+        "portrait_asset_id": {
+          "$ref": "#/$defs/id"
+        },
+        "voice_asset_id": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "eventField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "required"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+        },
+        "type": {
+          "enum": [
+            "boolean",
+            "number",
+            "string"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "eventType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "payload_fields"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+        },
+        "payload_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/eventField"
+          }
+        }
+      }
+    },
+    "entryPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "graph_id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+        },
+        "graph_id": {
+          "$ref": "#/$defs/id"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "compareCondition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "op",
+        "variable_id",
+        "comparison",
+        "value"
+      ],
+      "properties": {
+        "op": {
+          "const": "compare"
+        },
+        "variable_id": {
+          "$ref": "#/$defs/id"
+        },
+        "comparison": {
+          "enum": [
+            "eq",
+            "ne",
+            "gt",
+            "gte",
+            "lt",
+            "lte"
+          ]
+        },
+        "value": {
+          "$ref": "#/$defs/scalar"
+        }
+      }
+    },
+    "allCondition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "op",
+        "conditions"
+      ],
+      "properties": {
+        "op": {
+          "const": "all"
+        },
+        "conditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/condition"
+          }
+        }
+      }
+    },
+    "anyCondition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "op",
+        "conditions"
+      ],
+      "properties": {
+        "op": {
+          "const": "any"
+        },
+        "conditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/condition"
+          }
+        }
+      }
+    },
+    "notCondition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "op",
+        "condition"
+      ],
+      "properties": {
+        "op": {
+          "const": "not"
+        },
+        "condition": {
+          "$ref": "#/$defs/condition"
+        }
+      }
+    },
+    "condition": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/compareCondition"
+        },
+        {
+          "$ref": "#/$defs/allCondition"
+        },
+        {
+          "$ref": "#/$defs/anyCondition"
+        },
+        {
+          "$ref": "#/$defs/notCondition"
+        }
+      ]
+    },
+    "setVariableEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "op",
+        "variable_id",
+        "value"
+      ],
+      "properties": {
+        "op": {
+          "const": "set_variable"
+        },
+        "variable_id": {
+          "$ref": "#/$defs/id"
+        },
+        "value": {
+          "$ref": "#/$defs/scalar"
+        }
+      }
+    },
+    "addNumberEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "op",
+        "variable_id",
+        "amount"
+      ],
+      "properties": {
+        "op": {
+          "const": "add_number"
+        },
+        "variable_id": {
+          "$ref": "#/$defs/id"
+        },
+        "amount": {
+          "type": "number"
+        }
+      }
+    },
+    "emitEventEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "op",
+        "event_type_id",
+        "payload"
+      ],
+      "properties": {
+        "op": {
+          "const": "emit_event"
+        },
+        "event_type_id": {
+          "$ref": "#/$defs/id"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "effect": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/setVariableEffect"
+        },
+        {
+          "$ref": "#/$defs/addNumberEffect"
+        },
+        {
+          "$ref": "#/$defs/emitEventEffect"
+        }
+      ]
+    },
+    "lineNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "speaker_id",
+        "text_key",
+        "next_node_id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+        },
+        "kind": {
+          "const": "line"
+        },
+        "speaker_id": {
+          "$ref": "#/$defs/id"
+        },
+        "text_key": {
+          "$ref": "#/$defs/textKey"
+        },
+        "next_node_id": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "choiceOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "text_key",
+        "target_node_id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+        },
+        "text_key": {
+          "$ref": "#/$defs/textKey"
+        },
+        "target_node_id": {
+          "$ref": "#/$defs/id"
+        },
+        "availability": {
+          "$ref": "#/$defs/condition"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/effect"
+          }
+        }
+      }
+    },
+    "choiceNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "options"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+        },
+        "kind": {
+          "const": "choice"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/choiceOption"
+          }
+        }
+      }
+    },
+    "endNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+        },
+        "kind": {
+          "const": "end"
+        }
+      }
+    },
+    "dialogueNode": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/lineNode"
+        },
+        {
+          "$ref": "#/$defs/choiceNode"
+        },
+        {
+          "$ref": "#/$defs/endNode"
+        }
+      ]
+    },
+    "dialogueGraph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "entry_node_id",
+        "nodes"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+        },
+        "entry_node_id": {
+          "$ref": "#/$defs/id"
+        },
+        "nodes": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/dialogueNode"
+          }
+        }
+      }
+    },
+    "narrativeDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schema_version",
+        "document_id",
+        "variables",
+        "speakers",
+        "event_types",
+        "entry_points",
+        "graphs"
+      ],
+      "properties": {
+        "kind": {
+          "const": "sengine.narrative-document"
+        },
+        "schema_version": {
+          "const": 1
+        },
+        "document_id": {
+          "$ref": "#/$defs/id"
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/variableDefinition"
+          }
+        },
+        "speakers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/speaker"
+          }
+        },
+        "event_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/eventType"
+          }
+        },
+        "entry_points": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/entryPoint"
+          }
+        },
+        "graphs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/dialogueGraph"
+          }
+        }
+      }
+    },
+    "variableValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variable_id",
+        "value"
+      ],
+      "properties": {
+        "variable_id": {
+          "$ref": "#/$defs/id"
+        },
+        "value": {
+          "$ref": "#/$defs/scalar"
+        }
+      }
+    },
+    "playerSave": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schema_version",
+        "document_id",
+        "save_id",
+        "active_entry_point_id",
+        "active_graph_id",
+        "active_node_id",
+        "variable_values"
+      ],
+      "properties": {
+        "kind": {
+          "const": "sengine.player-save"
+        },
+        "schema_version": {
+          "const": 1
+        },
+        "document_id": {
+          "$ref": "#/$defs/id"
+        },
+        "save_id": {
+          "$ref": "#/$defs/id"
+        },
+        "active_entry_point_id": {
+          "$ref": "#/$defs/id"
+        },
+        "active_graph_id": {
+          "$ref": "#/$defs/id"
+        },
+        "active_node_id": {
+          "$ref": "#/$defs/id"
+        },
+        "variable_values": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/variableValue"
+          }
+        }
+      }
+    }
+  }
+}
