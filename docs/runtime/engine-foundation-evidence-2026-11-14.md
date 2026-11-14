@@ -46,7 +46,7 @@ Repository stars and open-issue counts are recorded only as public activity cont
 | Runtime/editor separation | The editor is in separate crates and Fyrox provides an export CLI. A generated project's actual runtime dependency graph must still prove that editor-only crates do not enter the game executable. | Engine plugins/features are modular and a game can omit editor-specific tooling. Bevy itself does not provide a full editor to accidentally ship. | Bevy has the cleaner starting boundary; Fyrox separation is feasible but must be checked with `cargo tree` and an exported build. |
 | Headless execution | Engine plugins and scenes are available, but a graphics-free runtime path for the exact SEngine sample has not been demonstrated here. | `bevy_ecs` is independently usable and directly supports a World + Schedule without a window or renderer. | Bevy has the stronger documented headless ECS path. Fyrox needs an explicit headless spike. |
 | World interaction to story | Fyrox plugins and scene nodes provide direct access to scenes and resources. This is convenient, but putting story semantics directly into engine plugins would couple project data to Fyrox. | ECS systems, resources, and events provide natural integration points for triggers and state. Bevy Entity IDs must not become persistent project IDs. | Both can integrate an engine-neutral narrative runtime. Bevy appears simpler for headless systems; Fyrox appears simpler for editor-visible scene integration. |
-| Save/project identity | Fyrox has scene/resource serialization and UUID-based scene objects. SEngine still needs its own stable project IDs and migration rules. | Bevy scenes/world serialization exist, but entity identity and SEngine's project/asset contracts still need an adapter. | Neither removes the need for an SEngine-owned project format. |
+| Save/project identity | Fyrox has scene/resource serialization. SEngine still needs its own stable project IDs and migration rules. | Bevy scenes/world serialization exist, but entity identity and SEngine's project/asset contracts still need an adapter. | Neither removes the need for an SEngine-owned project format. |
 
 ### Important editor distinction
 
@@ -58,14 +58,9 @@ Bevy Feathers is also not a finished editor. Bevy's own 0.20 roadmap describes f
 
 ### Fyrox
 
-The published `fyrox-impl 1.0.1` package declares MIT and Rust 1.87. Its direct dependency set includes the engine's own core, resource, animation, UI, graphics, material, and texture crates, plus (among others):
+The published `fyrox-impl 1.0.1` package declares MIT and Rust 1.87. Its direct dependencies include the engine's core, resource, animation, UI, graphics, material, and texture crates, plus (among others) `rapier2d` and `rapier3d` 0.32, `winit` 0.30, `gltf` 1.4, `image` 0.25.1, `rayon`, `libloading`, and `clap`.
 
-- `rapier2d` and `rapier3d` 0.32;
-- `winit` 0.30;
-- `gltf` 1.4;
-- `image` 0.25.1;
-- `symphonia` 0.5.4 with `all-codecs`;
-- `rayon`, `libloading`, and `clap`.
+Other engine crates add their own dependencies: `fyrox-sound 1.0.1` declares `symphonia` 0.5.4 with `all-codecs`; `fyrox-graphics-gl 1.0.1` declares `glow` 0.17 and, outside WASM, `glutin` 0.32 and `glutin-winit` 0.5. These are manifest constraints, not a resolved lockfile report.
 
 The editor library `fyroxed_base 1.0.1` is a separate package and directly adds project/build tooling and editor facilities such as `cargo_metadata` 0.22, `notify` 8, `imageproc` 0.25, `open` 5, `toml` 0.9, and `toml_edit` 0.23.
 
