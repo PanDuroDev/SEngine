@@ -1,0 +1,274 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sengine.dev/schemas/gameplay-graph-v1.schema.json",
+  "title": "SEngine Gameplay Graph v1",
+  "description": "Proposed authoring-data shape. Semantic validation requires the versioned node catalog.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "schema_version",
+    "semantics_version",
+    "graph_id",
+    "graph_kind",
+    "variables",
+    "nodes",
+    "connections"
+  ],
+  "properties": {
+    "format": {
+      "const": "sengine.gameplay-graph"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "semantics_version": {
+      "const": 1
+    },
+    "graph_id": {
+      "$ref": "#/$defs/id"
+    },
+    "graph_kind": {
+      "const": "gameplay"
+    },
+    "variables": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/variable"
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/node"
+      }
+    },
+    "connections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/connection"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "value_type": {
+      "enum": [
+        "bool",
+        "i64",
+        "f64",
+        "string",
+        "entity_ref",
+        "resource_ref"
+      ]
+    },
+    "variable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "value_type"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "value_type": {
+          "$ref": "#/$defs/value_type"
+        },
+        "default": {
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "const": "bool"
+              }
+            },
+            "required": [
+              "value_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "const": "i64"
+              }
+            },
+            "required": [
+              "value_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "const": "f64"
+              }
+            },
+            "required": [
+              "value_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "const": "string"
+              }
+            },
+            "required": [
+              "value_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "enum": [
+                  "entity_ref",
+                  "resource_ref"
+                ]
+              }
+            },
+            "required": [
+              "value_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "$ref": "#/$defs/id"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "node_type_id",
+        "node_definition_version",
+        "config"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "node_type_id": {
+          "$ref": "#/$defs/id"
+        },
+        "node_definition_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "config": {
+          "type": "object"
+        }
+      }
+    },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_id",
+        "port_id"
+      ],
+      "properties": {
+        "node_id": {
+          "$ref": "#/$defs/id"
+        },
+        "port_id": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "connection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "connection_kind",
+        "from",
+        "to"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "connection_kind": {
+          "enum": [
+            "execution",
+            "data"
+          ]
+        },
+        "from": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "to": {
+          "$ref": "#/$defs/endpoint"
+        }
+      }
+    }
+  }
+}

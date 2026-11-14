@@ -1,0 +1,111 @@
+{
+  "format": "sengine.gameplay-node-catalog",
+  "catalog_version": 1,
+  "domain": "gameplay",
+  "node_definitions": [
+    {
+      "node_type_id": "event.interaction_started",
+      "definition_version": 1,
+      "purity": "event_source",
+      "ports": [
+        {
+          "id": "then",
+          "direction": "output",
+          "kind": "execution"
+        },
+        {
+          "id": "target",
+          "direction": "output",
+          "kind": "data",
+          "value_type": "entity_ref"
+        }
+      ]
+    },
+    {
+      "node_type_id": "variable.get",
+      "definition_version": 1,
+      "purity": "pure",
+      "config_schema": {
+        "required": [
+          "variable_id"
+        ]
+      },
+      "ports": [
+        {
+          "id": "value",
+          "direction": "output",
+          "kind": "data",
+          "value_type": "bool"
+        }
+      ]
+    },
+    {
+      "node_type_id": "flow.branch",
+      "definition_version": 1,
+      "purity": "control_flow",
+      "ports": [
+        {
+          "id": "in",
+          "direction": "input",
+          "kind": "execution"
+        },
+        {
+          "id": "condition",
+          "direction": "input",
+          "kind": "data",
+          "value_type": "bool"
+        },
+        {
+          "id": "true",
+          "direction": "output",
+          "kind": "execution"
+        },
+        {
+          "id": "false",
+          "direction": "output",
+          "kind": "execution"
+        }
+      ]
+    },
+    {
+      "node_type_id": "entity.set_active",
+      "definition_version": 1,
+      "purity": "host_command",
+      "config_schema": {
+        "required": [
+          "active"
+        ]
+      },
+      "ports": [
+        {
+          "id": "in",
+          "direction": "input",
+          "kind": "execution"
+        },
+        {
+          "id": "entity",
+          "direction": "input",
+          "kind": "data",
+          "value_type": "entity_ref"
+        }
+      ]
+    },
+    {
+      "node_type_id": "event.publish",
+      "definition_version": 1,
+      "purity": "host_command",
+      "config_schema": {
+        "required": [
+          "event_type"
+        ]
+      },
+      "ports": [
+        {
+          "id": "in",
+          "direction": "input",
+          "kind": "execution"
+        }
+      ]
+    }
+  ]
+}
