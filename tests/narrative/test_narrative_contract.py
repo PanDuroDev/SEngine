@@ -230,6 +230,8 @@ def validate_save(save, document, variables, graphs, entry_points):
         seen.add(variable_id)
         if scalar_type(item.get("value")) != variables[variable_id]["type"]:
             raise ValueError("save_variable_type_mismatch")
+    if seen != set(variables):
+        raise ValueError("save_variable_missing")
     return True
 
 
@@ -244,6 +246,16 @@ def available_options(choice_node, values):
             # Invalid conditions fail closed, including when nested under NOT.
             continue
     return result
+
+
+def select_choice(choice_node, option_id, variables, values):
+    option = next((item for item in choice_node["options"] if item["id"] == option_id), None)
+    if option is None:
+        raise ValueError("choice_not_found")
+    if option not in available_options(choice_node, values):
+        raise ValueError("choice_unavailable")
+    events = apply_choice(option, variables, values)
+    return option["target_node_id"], events
 
 
 def apply_choice(option, variables, values):
@@ -300,9 +312,17 @@ class NarrativeContractTests(unittest.TestCase):
         values = {key: variable["default"] for key, variable in self.variables.items()}
         values["story.has_archive_key"] = True
         option = next(item for item in self.choice["options"] if item["id"] == "choice.use_key")
-        events = apply_choice(option, self.variables, values)
+        target, events = select_choice(self.choice, option["id"], self.variables, values)
+        self.assertEqual(target, "node.ending")
         self.assertEqual(values["story.trust"], 1)
         self.assertEqual([event["event_type_id"] for event in events], ["event.timeline.play"])
+
+    def test_stale_choice_is_rejected_without_mutating_state(self):
+        values = {key: variable["default"] for key, variable in self.variables.items()}
+        before = copy.deepcopy(values)
+        with self.assertRaisesRegex(ValueError, "choice_unavailable"):
+            select_choice(self.choice, "choice.use_key", self.variables, values)
+        self.assertEqual(values, before)
 
     def test_invalid_effect_does_not_partially_commit(self):
         values = {key: variable["default"] for key, variable in self.variables.items()}
@@ -347,6 +367,12 @@ class NarrativeContractTests(unittest.TestCase):
         effect["payload"] = {"unknown": "value"}
         with self.assertRaisesRegex(ValueError, "invalid_event_payload"):
             validate_document(document)
+
+    def test_save_missing_variable_value_is_rejected(self):
+        save = copy.deepcopy(self.save)
+        save["variable_values"] = save["variable_values"][:-1]
+        with self.assertRaisesRegex(ValueError, "save_variable_missing"):
+            validate_save(save, self.document, self.variables, self.graphs, self.entry_points)
 
     def test_save_document_mismatch_is_rejected(self):
         save = copy.deepcopy(self.save)
