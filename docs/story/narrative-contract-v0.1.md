@@ -165,3 +165,16 @@ This proposal does not define:
 - renderer, physics, audio, editor widget, or export APIs.
 
 Those boundaries remain owned by their respective streams. Do not add Rhai, Lua, a graph library, or an engine dependency to adopt this data contract.
+
+
+## 11. Executable contract checks
+
+A standard-library Python conformance harness lives at `tests/narrative/test_narrative_contract.py`. Run it from the repository root:
+
+```sh
+python -m unittest discover -s tests/narrative -v
+```
+
+The harness checks local schema-reference resolution, the sample's semantic references and types, conditional-choice visibility, ordered event output, atomic effect failure, fail-closed invalid conditions, duplicate IDs, invalid event payloads, and save-position/document validation.
+
+This harness is an executable specification for the proposed data contract. It is **not** the production narrative runtime and does not replace a standards-compliant JSON Schema validator or the future Rust headless runtime tests. The repository currently has no CI workflow; the Integration stream owns adding the repository-wide CI gate. Keep this contract Proposed until the Runtime stream reviews it and automated checks are wired into CI.
