@@ -100,7 +100,107 @@
             }
           ]
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "const": "bool"
+              }
+            },
+            "required": [
+              "value_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "const": "i64"
+              }
+            },
+            "required": [
+              "value_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "const": "f64"
+              }
+            },
+            "required": [
+              "value_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "const": "string"
+              }
+            },
+            "required": [
+              "value_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "enum": [
+                  "entity_ref",
+                  "resource_ref"
+                ]
+              }
+            },
+            "required": [
+              "value_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "$ref": "#/$defs/id"
+              }
+            }
+          }
+        }
+      ]
     },
     "node": {
       "type": "object",
