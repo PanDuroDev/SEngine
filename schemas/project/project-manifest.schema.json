@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SEngine Project Manifest",
+  "description": "Proposed version 1 project-root manifest. Scene contents and asset import metadata are defined separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "format_version",
+    "project_id",
+    "name",
+    "entry_scene_id",
+    "scenes",
+    "assets"
+  ],
+  "properties": {
+    "kind": {
+      "const": "sengine.project"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "project_id": {
+      "$ref": "#/$defs/id"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "entry_scene_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/id"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scenes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/scene"
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*(?:^|/)\\.\\.?(/|$))(?!.*//)(?!.*\\/$)(?!.*\\\\)[^\\u0000-\\u001F:]+$"
+    },
+    "scene": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "dimension"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "dimension": {
+          "enum": [
+            "2d",
+            "3d",
+            "mixed"
+          ]
+        }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "kind": {
+          "enum": [
+            "texture",
+            "mesh",
+            "audio",
+            "font",
+            "material",
+            "narrative",
+            "data",
+            "other"
+          ]
+        }
+      }
+    }
+  }
+}

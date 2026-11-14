@@ -1,0 +1,10 @@
+{
+  "kind": "sengine.project",
+  "format_version": 1,
+  "project_id": "project.first_game",
+  "name": "First Game",
+  "description": "A new SEngine project.",
+  "entry_scene_id": null,
+  "scenes": [],
+  "assets": []
+}
