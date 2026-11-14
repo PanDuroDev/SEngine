@@ -1,0 +1,19 @@
+{
+  "kind": "sengine.player-save",
+  "schema_version": 1,
+  "document_id": "story.archive",
+  "save_id": "save.slot_01",
+  "active_entry_point_id": "interaction.archive_door",
+  "active_graph_id": "dialogue.archive_intro",
+  "active_node_id": "node.decision",
+  "variable_values": [
+    {
+      "variable_id": "story.has_archive_key",
+      "value": true
+    },
+    {
+      "variable_id": "story.trust",
+      "value": 0
+    }
+  ]
+}
