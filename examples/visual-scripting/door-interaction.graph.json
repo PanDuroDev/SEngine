@@ -1,0 +1,116 @@
+{
+  "format": "sengine.gameplay-graph",
+  "schema_version": 1,
+  "semantics_version": 1,
+  "graph_id": "graph.door-interaction",
+  "graph_kind": "gameplay",
+  "variables": [
+    {
+      "id": "door.is_unlocked",
+      "value_type": "bool",
+      "default": false
+    }
+  ],
+  "nodes": [
+    {
+      "id": "node.interaction-started",
+      "node_type_id": "event.interaction_started",
+      "node_definition_version": 1,
+      "config": {
+        "event_filter": "door.interact"
+      }
+    },
+    {
+      "id": "node.read-unlocked",
+      "node_type_id": "variable.get",
+      "node_definition_version": 1,
+      "config": {
+        "variable_id": "door.is_unlocked"
+      }
+    },
+    {
+      "id": "node.branch-unlocked",
+      "node_type_id": "flow.branch",
+      "node_definition_version": 1,
+      "config": {}
+    },
+    {
+      "id": "node.open-door",
+      "node_type_id": "entity.set_active",
+      "node_definition_version": 1,
+      "config": {
+        "active": true
+      }
+    },
+    {
+      "id": "node.report-locked",
+      "node_type_id": "event.publish",
+      "node_definition_version": 1,
+      "config": {
+        "event_type": "door.locked"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "edge.interaction-to-branch",
+      "connection_kind": "execution",
+      "from": {
+        "node_id": "node.interaction-started",
+        "port_id": "then"
+      },
+      "to": {
+        "node_id": "node.branch-unlocked",
+        "port_id": "in"
+      }
+    },
+    {
+      "id": "edge.variable-to-condition",
+      "connection_kind": "data",
+      "from": {
+        "node_id": "node.read-unlocked",
+        "port_id": "value"
+      },
+      "to": {
+        "node_id": "node.branch-unlocked",
+        "port_id": "condition"
+      }
+    },
+    {
+      "id": "edge.branch-true-open",
+      "connection_kind": "execution",
+      "from": {
+        "node_id": "node.branch-unlocked",
+        "port_id": "true"
+      },
+      "to": {
+        "node_id": "node.open-door",
+        "port_id": "in"
+      }
+    },
+    {
+      "id": "edge.branch-false-report",
+      "connection_kind": "execution",
+      "from": {
+        "node_id": "node.branch-unlocked",
+        "port_id": "false"
+      },
+      "to": {
+        "node_id": "node.report-locked",
+        "port_id": "in"
+      }
+    },
+    {
+      "id": "edge.target-open",
+      "connection_kind": "data",
+      "from": {
+        "node_id": "node.interaction-started",
+        "port_id": "target"
+      },
+      "to": {
+        "node_id": "node.open-door",
+        "port_id": "entity"
+      }
+    }
+  ]
+}
