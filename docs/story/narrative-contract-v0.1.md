@@ -175,6 +175,6 @@ A standard-library Python conformance harness lives at `tests/narrative/test_nar
 python -m unittest discover -s tests/narrative -v
 ```
 
-The harness checks local schema-reference resolution, the sample's semantic references and types, conditional-choice visibility, ordered event output, atomic effect failure, fail-closed invalid conditions, duplicate IDs, invalid event payloads, and save-position/document validation.
+The harness checks local schema-reference resolution, the sample's semantic references and types, conditional-choice visibility, stale-choice rejection, ordered event output, atomic effect failure, fail-closed invalid conditions, duplicate IDs, invalid event payloads, and complete typed save validation.
 
 This harness is an executable specification for the proposed data contract. It is **not** the production narrative runtime and does not replace a standards-compliant JSON Schema validator or the future Rust headless runtime tests. The repository currently has no CI workflow; the Integration stream owns adding the repository-wide CI gate. Keep this contract Proposed until the Runtime stream reviews it and automated checks are wired into CI.
